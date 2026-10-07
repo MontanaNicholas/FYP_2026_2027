@@ -1,6 +1,17 @@
 <script>
+	import { onMount } from 'svelte';
+
 	let health = $state(10);
 	let trapTriggered = $state(false);
+	let trap = $state(null);
+
+	onMount(() => {
+		trap = new URLSearchParams(window.location.search).get('trap');
+
+		if (trap) {
+			activateTrap();
+		}
+	});
 
 	function activateTrap() {
 		health = health - 5;
@@ -14,6 +25,10 @@
 
 	<h2>Rat Player</h2>
 
+	{#if trap}
+		<p>Trap identified!</p>
+	{/if}
+	
 	<div class="health">
 		{health} / 10 HP
 	</div>

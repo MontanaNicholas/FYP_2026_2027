@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RATS! Marker Test</title>
+</head>
+
+<body>
+    <h1>RATS! Marker Detection Test</h1>
+    <p>Step 2: Testing camera marker detection.</p>
+
+    
+    <video id="camera" width="640" autoplay playsinline></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    
+    <p id="status">Starting camera...</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+    <script>
+        // Find the HTML elements
+        const camera = document.getElementById("camera");
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext("2d");
+        const status = document.getElementById("status");
+
+        // Starts the webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                camera.srcObject = stream;
+                status.textContent = "Camera is starting...";
+            })
+            .catch(function (error) {
+                status.textContent = "Camera error: " + error.message;
+            });
+
+        // Checks the camera image for a QR code
+        function detectMarker() {
+            if (camera.readyState === camera.HAVE_ENOUGH_DATA) {
+                // Copy the webcam image onto the canvas
+                context.drawImage(
+                    camera, 0, 0, canvas.width, canvas.height
+                );
+
+                // Reads the image pixels
+                const imageData = context.getImageData(
+                    0, 0, canvas.width, canvas.height
+                );
+
+                // Tries to detect a QR code
+                const code = jsQR(
+                    imageData.data,
+                    imageData.width,
+                    imageData.height
+                );
+
+                // Displays the result
+                if (code) {
+                    status.textContent = "Marker detected: " + code.data;
+                } else {
+                    status.textContent = "Looking for a QR marker...";
+                }
+            }
+
+            // Check the next camera frame
+            requestAnimationFrame(detectMarker);
+        }
+
+        // Start detection when the webcam begins playing
+        camera.addEventListener("playing", detectMarker);
+    </script>
+</body>
+</html>

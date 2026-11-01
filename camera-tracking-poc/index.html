@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Camera Tracking PoC</title>
+</head>
+<body>
+    <h1>Oh, RATS! Camera Tracking</h1>
+    <p>Step 1: Testing the webcam.</p>
+
+    <video id="camera" width="640" autoplay playsinline></video>
+
+    <script>
+        const camera = document.getElementById("camera");
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                camera.srcObject = stream;
+            })
+            .catch(function (error) {
+                console.log("Camera error:", error);
+                alert("Could not access the camera. Check your browser permissions.");
+            });
+    </script>
+</body>
+</html>
